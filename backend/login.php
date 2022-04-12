@@ -1,3 +1,31 @@
+<?php
+
+session_start();
+if (isset($_SESSION['user'])){
+    header('location:profil.php');
+}
+
+include_once('../class/Crud.php');
+$user = new Crud();
+if(isset($_POST['Login'])){
+	$username = $user->escape_string($_POST['userName']);
+	$password = $user->escape_string(md5($_POST['Password']));
+ 
+	$auth = $user->login($username, $password);
+ 
+	if(!$auth){
+    	header('location:login.php');
+	}
+	else{
+		$_SESSION['user'] = $auth;
+        $_SESSION['time'] = date("Y-m-d H:i:s");
+        $_SESSION['userName'] = $username;
+		header('location:profil.php');
+	}
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,19 +50,20 @@
                 <!---------------------------------- form ------------------------------------>
                 <div class ="bg-white d-flex flex-column align-items-center col-12 col-md-6 rounded-3 ">
                     <a class="navbar-brand" href="index.php"><img src="../Assets/Images/logo2.png" class="mb-3 mt-3" alt="" style="width: 120px;"></a>
-                    <form action="profil.php" class="p-4 align-self-start w-100">
+                    <form action="" class="p-4 align-self-start w-100" method="post">
                         <div class="mb-3">
                             <h3 class="text-center fw-bold text-primary">Authenticate</h3>
                         </div>
                         <div class="mb-3">
                             <label for="userName" class="form-label">User Name</label>
-                            <input type="text" class="form-control" id="userName">
+                            <input type="text" class="form-control" id="userName" name="userName">
+                            <span id="usernameavailblty"></span>
                         </div>
                         <div class="mb-3">
                             <label for="Password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="Password">
+                            <input type="password" class="form-control" id="Password" name="Password">
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 mb-5">Submit</button>
+                        <button type="submit" class="btn btn-primary w-100 mb-5" id="Login" name="Login">Login</button>
                         <p class="text-center">No account? <a href="signUp.php" class="text-decoration-none text-primary fw-bold">Sign Up</a> here</p>
                     </form>
                 </div>
@@ -43,5 +72,18 @@
         </div>
     <!---------------------------------------------------------------------------->    
     <script src="js/my-bootstrap.js"></script>
+    <script>
+        function checkusername(va) {
+            $.ajax({
+                type: "POST",
+                url: "check.php",
+                data:'userName='+va,
+                success: function(data){
+                    $("#usernameavailblty").html(data);
+                    }
+            });
+        }
+        
+    </script>
 </body>
 </html>

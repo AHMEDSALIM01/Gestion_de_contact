@@ -1,3 +1,49 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['user']) ||(trim ($_SESSION['user']) == '')){
+	header('location:login.php');
+}
+
+include_once('../class/Crud.php');
+$contact = new Crud();
+
+if(isset($_POST['Update']))
+    {
+        $id = $_POST['id'];
+        $uid=$_SESSION['user'];
+        $Name = $_POST['Name'];
+        $Phone = $_POST['Phone'];
+        $Email = $_POST['Email'];
+        $Address = $_POST['Address'];
+        $sql=$contact->update($id,$uid,$Name, $Phone,$Email,$Address);
+        if($sql)
+        {
+            echo "<script>alert('Contact Edited successfully.');</script>";
+            echo "<script>window.location.href='contactList.php'</script>";
+        }else{
+            echo "<script>alert('Something went wrong. Please try again');</script>";
+        }
+    }
+
+if(isset($_POST['save'])){
+    $userID= $_SESSION['user'];
+    $Name= $_POST['Name'];
+    $Phone= $_POST['Phone'];
+    $Email= $_POST['Email'];
+    $Address= $_POST['Address'];
+    $sqdl = $contact->addContact($userID,$Name,$Phone,$Email,$Address);
+    if($sqdl){
+        echo "<script>alert('Contact Added successfully.');</script>";
+        echo "<script>window.location.href='contactList.php'</script>";
+    }else{
+        echo "<script>alert('Something went wrong. Please try again');</script>";
+    }
+}
+
+$row = $contact->displayConnect();
+
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -25,28 +71,29 @@
                     </div>
                 </div>
                 <div class ="form row w-100 justify-content-center align-items-center" style="position:absolute; z-index:1060; display:flex;">
-                    <form action="profil.php" class="p-4 bg-white col-12 col-sm-8 col-md-6 rounded-3" >
+                    <form action="" class="p-4 bg-white col-12 col-sm-8 col-md-6 rounded-3" method="post">
                         <div class="mb-3">
                             <h3 class="formTilte text-center fw-bold text-primary">Add Conatct</h3>
                         </div>
                         <div class ="d-flex">
                         <div class="mb-3 w-50 me-3">
                             <label for="Name" class="form-label">Name<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control shadow-none" id="Name">
+                            <input type="text" class=" form-control shadow-none" id="Name" name="Name" value ="">
                         </div>
                         <div class="mb-3 w-50">
                             <label for="Phone" class="form-label">Phone</label>
-                            <input type="text" class="form-control shadow-none" id="Phone">
+                            <input type="text" class="form-control shadow-none" id="Phone" name="Phone" value ="">
                         </div>
                         </div>
                         <div class="mb-3">
                             <label for="Email" class="form-label">Email<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control shadow-none" id="Email">
+                            <input type="text" class="form-control shadow-none" id="Email" name="Email" value ="">
                         </div>
                         <div class="mb-3">
                             <label for="Address" class="form-label">Address</label>
-                            <input type="text" class="form-control shadow-none" id="Address">
+                            <input type="text" class="form-control shadow-none" id="Address" name="Address" value ="">
                         </div>
+                        <input type="hidden" class="form-control shadow-none" id="id" name="id" value ="">
                         <div class="d-flex">
                             <input type="submit" class="save btn btn-primary w-50 me-3 mb-5 " name="save" value="Add">
                             <input type="reset" class="cancel btn btn-danger w-50 mb-5" name="cancel" value="cancel">
@@ -73,7 +120,7 @@
                             <a class="nav-link text-white mx-2"  href="contactList.php">Contacts</a>
                         </li>
                         <li class="nav-item d-flex justify-content-center me-3">
-                            <a class="nav-link text-white mx-2" href="Logout.php">Logout</a>
+                            <a class="nav-link text-white mx-2" href="../backend/components/logout.php">Logout</a>
                         </li>
                     </ul>
                 </div>
@@ -87,29 +134,42 @@
             <caption class="p-3">
                 <h3 class="text-danger fw-bold">Contact List</h3>
             </caption>
+                <?php 
+                    if(is_array($row)){
+                ?>
             <thead>
                 <tr>
                 <td></td>
                 <th scope="col">Name</th>
-                <th scope="col">Address</th>
-                <th scope="col">Tel</th>
                 <th scope="col">Email</th>
+                <th scope="col">Phone</th>
+                <th scope="col">Address</th>
                 <td></td>
                 <td></td>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                <td ><span class="bg-primary text-dark p-1" style="width:20px; height:20px; border-radius:100%;">AB</span></td>
-                <td>Ahmed Salim</td>
-                <td>Youssoufia Maroc</td>
-                <td>0677889900</td>
-                <td>salim@gmail.com</td>
+                <?php foreach ($row as $row){
+                ?>
+                <tr class="idd" data-target ="<?=$row['id'];?>">
+                <td ><span class="nme border border-2 border-primary text-danger p-1" style="width:20px; height:20px; border-radius:100%;" ><?php echo strtoupper(substr($row['Name'],0,2))?></span></td>
+                <td class="tdN" data-target="<?=$row['Name'];?>"><?php echo $row['Name']?></td>
+                <td class="tdE"  data-target="<?=$row['Email'];?>"><?php echo $row['Email']?></td>
+                <td class="tdP"  data-target="<?=$row['Phone'];?>"><?php echo $row['Phone']?></td>
+                <td class="tdA"  data-target="<?=$row['Address'];?>"><?php echo $row['Address']?></td>
                 <td><i class="edit text-danger fs-5 bi bi-pen-fill " style="cursor:pointer;"></i></td>
-                <td><i class="delete text-danger fs-5 bi bi-trash-fill" style="cursor:pointer;"></i></td>
+                <td><a href="#?id=<?php echo $row['id']?>"><i class="delete text-danger fs-5 bi bi-trash-fill" style="cursor:pointer;"></i></a</td>
                 </tr>
+                <?php }}?>
             </tbody>
         </table>
+        <?php if(!is_array($row))
+            {
+        ?>
+        <h3 class="text-secondary text-center">No Contacts</h3>
+        <?php
+            }
+        ?>
         <div class="d-flex justify-content-center">
             <button class="add btn btn-primary text text-uppercase text-white my-3 px-3 py-2" id = "ADDNEW">
                 <i class="fs-6 bi bi-plus-circle-fill"></i>
@@ -120,5 +180,15 @@
     <!--------------------------------------------------------------------------------------------->
     <script src="js/my-bootstrap.js"></script>
     <script src="../Assets/JS/script.js"></script>
+    <script>
+        
+        Yes.addEventListener("click",()=>{
+            modal.setAttribute("style","display:none;");
+            form.setAttribute("style","display:flex;");
+            confirmation.setAttribute("style","display:none;");
+            window.location.href='../class/delete.php?id=<?php echo $row['id']?>';
+        })
+        
+    </script>
 </body>
 </html>

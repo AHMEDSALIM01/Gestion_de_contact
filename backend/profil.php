@@ -1,3 +1,19 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['user']) ||(trim ($_SESSION['user']) == '')){
+	header('location:login.php');
+}
+ 
+include_once('../class/Crud.php');
+ 
+$user = new Crud();
+ 
+
+$sql = "SELECT * FROM users WHERE id = '".$_SESSION['user']."'";
+$row = $user->details($sql);
+ 
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +26,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <title>Profile</title>
 </head>
-<body class="vh-100" style="background-image:url('../Assets/Images/tile_background.png')">
+<body class="vh-100" style="background-image:url('../Assets/Images/tile_background.png');font-family: 'Poppins', sans-serif;">
     <!---------------------------------- Navbar ---------------------------------->
     <nav class="navbar navbar-expand-lg navbar-light mb-2 border-bottom border-3 border-danger bg-danger px-5 fs-5 sticky-top"  >
             <div class="container-sm container-fluid">
@@ -21,15 +37,15 @@
                         </button>
                 </div>
                 <div class="collapse  mt-sm-3 mt-lg-0 mb-0 navbar-collapse text-white" id="navbarText">
-                    <ul class="navbar-nav ms-auto text-white  mb-0  align-items-center flex-column flex-md-row justify-content-start ">
+                    <ul class="navbar-nav ms-auto text-white  mb-0  align-items-center flex-column flex-md-row justify-content-end ">
                         <li class="nav-item d-flex justify-content-center me-3">
-                            <a class="nav-link text-white mx-2"  href="profil.php">Ahmed Salim</a>
+                            <a class="nav-link text-white mx-2"  href="profil.php"><?php echo $_SESSION['userName']?></a>
                         </li>
                         <li class="nav-item d-flex justify-content-center me-3">
                             <a class="nav-link text-white mx-2"  href="contactList.php">Contacts</a>
                         </li>
                         <li class="nav-item d-flex justify-content-center me-3">
-                            <a class="nav-link text-white mx-2" href="Logout.php">Logout</a>
+                            <a class="nav-link text-white mx-2" href="./components/logout.php">Logout</a>
                         </li>
                     </ul>
                 </div>
@@ -39,11 +55,10 @@
     <!---------------------------------- Card ------------------------------------>
         <div class="card border-0 container d-flex justify-content-center align-items-center mt-5 " style="background-color:transparent;">
             <div class="position-relative d-flex flex-column align-items-center card-body bg-light text-dark fs-5 mx-0  rounded-3 h-100" >
-                <h1 class="card-title text-center text-danger mb-4 fw-bolder">Welcome !</h1>
+                <h3 class="card-title text-center text-danger mb-4 fw-bolder">Welcome <?php echo $row['userName']?>!</h3>
                 <img src="../Assets/Images/5-5us(1).JPG" alt="" style="width:85px;height:85px; border-radius:100% ">
-                <label for="image" class ="text-secondary " style="position:absolute; top:135px; right:155px; cursor:pointer;"><i class="fs-4 bi bi-camera-fill"></i></label>
-                <input type="file" name="image" id="image" style="visibility:hidden;">
-                <table class="table table-borderless table-light table-striped table-hover">
+                <button type="submit" name="editProfile" id="editProfile" class="btn btn-danger my-3">Edit your profile</button>
+                <table class="table table-borderless table-light table-striped table-hover mt-0">
                     <thead>
                         <tr>
                         <th scope="col">Your Profile : </th>
@@ -52,15 +67,15 @@
                     <tbody>
                         <tr>
                         <th scope="row">User Name</th>
-                        <td>Ahmed Salim</td>
+                        <td><?php echo $row['userName']?></td>
                         </tr>
                         <tr>
                         <th scope="row">SignupDate</th>
-                        <td>Fri,08 Apr 2022 14:03:32</td>
+                        <td><?php echo $row['time']?></td>
                         </tr>
                         <tr>
                         <th scope="row">Last Login</th>
-                        <td>Sun,09 Apr 2022 18:55:01</td>
+                    <td><?php echo $_SESSION['time']?></td>
                         </tr>
                     </tbody>
                 </table>

@@ -1,3 +1,9 @@
+<?php
+    session_start();
+    if (isset($_SESSION['user'])){
+        header('location:profil.php');
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,10 +14,9 @@
     <link rel="stylesheet" href="../Assets/CSS/my-bootstrap.css">
     <link rel="stylesheet" href="../Assets/CSS/style.css">
     <link rel="shortcut icon" type="image/png" href="">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">  -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <title>accueil</title>
 </head>
@@ -26,18 +31,7 @@
     </nav>
     </div>
     <!---------------------------------------------------------------------------->
-    <!---------------------------------- Card ------------------------------------>
-        <!-- <div class="card border-0 container col-12 d-flex justify-content-center  align-items-center mt-5 " style="background-color:#d2d2d2;">
-            <div class="card-body bg-white text-dark fs-5 border border-3 border-danger  px-4 py-5 mx-0  rounded-3 h-100" style ="background-color :; box-shadow: 20px 20px 10px #dc3545">
-                <h3 class="card-title text-danger mb-4 fw-bolder">Hello!</h3>
-                <p class="card-text pb-4 " >Contact is a web site where you can Save your contacts with 15gb in storage for free. <br>
-
-                    <a href="signUp.php" class= "fw-bold text-primary">Sign Up</a> for free to start creating your contact list. <br>
-                    already have an account? <a href="login.php" class= "fw-bold text-primary">login</a>
-                </p>
-            </div>
-            <a class="navbar-brand mt-5 " href="#"><img src="../Assets/Images/logo2.png" alt="" style="width: 150px;"></a>
-        </div> -->
+    <!---------------------------------- Container ------------------------------------>
         <div class="container d-flex align-items-center justify-content-center mt-5">
             <div class="row d-flex align-items-center justify-content-center">
 
