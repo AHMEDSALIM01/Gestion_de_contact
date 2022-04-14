@@ -26,11 +26,16 @@ class Crud{
     }
     
     public function login($uname,$upassword){
-        $result = mysqli_query($this->dbh,"SELECT * FROM users WHERE userName = '$uname' AND Password = '$upassword'");
+        $result = mysqli_query($this->dbh,"SELECT * FROM users WHERE userName = '$uname'");
         $num = mysqli_num_rows($result);
         if($num>0){
             $row = $result->fetch_assoc();
-            return $row['id'];
+            if($upassword!==$row['Password']){
+                return false;
+            }else{
+                return $row['id'];
+            }
+            
         }else{
             return false;
         }
@@ -65,9 +70,9 @@ class Crud{
             return false;
         }
     }
-    public function displayConnect(){
+    public function displayConnect($start_from,$limit){
  
-            $sql = "SELECT * FROM contacliste WHERE id_user = '".$_SESSION['user']."'";
+            $sql = "SELECT * FROM contacliste WHERE id_user = '".$_SESSION['user']."' ORDER BY id ASC LIMIT $start_from, $limit";
 			$query = $this->dbh->query($sql);
 			$data = array();
             $message ="";
@@ -91,6 +96,13 @@ class Crud{
                     return false;
                 }
             }
+    
+    public function countID(){
+        $sql = "SELECT count(id) FROM contacliste WHERE id_user = '".$_SESSION['user']."'";
+        $query = $this->dbh->query($sql);
+        $row= mysqli_fetch_row($query);
+        return $row;
+    }
 }
 
 ?>

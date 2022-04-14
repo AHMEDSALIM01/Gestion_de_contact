@@ -81,10 +81,11 @@
         function checkusername(va) {
             $.ajax({
                 type: "POST",
-                url: "check.php",
+                url: "./components/check.php",
                 data:'userName='+va,
                 success: function(data){
-                    $("#usernameavailblty").html(data);
+                    // $("#usernameavailblty").html(data);
+                    console.log(data);
                     }
             });
 

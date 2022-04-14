@@ -1,6 +1,7 @@
 <?php
 
 session_start();
+$message="";
 if (isset($_SESSION['user'])){
     header('location:profil.php');
 }
@@ -12,9 +13,10 @@ if(isset($_POST['Login'])){
 	$password = $user->escape_string(md5($_POST['Password']));
  
 	$auth = $user->login($username, $password);
+
  
 	if(!$auth){
-    	header('location:login.php');
+        $message="Invalid password or email !";
 	}
 	else{
 		$_SESSION['user'] = $auth;
@@ -50,20 +52,22 @@ if(isset($_POST['Login'])){
                 <!---------------------------------- form ------------------------------------>
                 <div class ="bg-white d-flex flex-column align-items-center col-12 col-md-6 rounded-3 ">
                     <a class="navbar-brand" href="index.php"><img src="../Assets/Images/logo2.png" class="mb-3 mt-3" alt="" style="width: 120px;"></a>
-                    <form action="" class="p-4 align-self-start w-100" method="post">
+                    <form  class="p-4 align-self-start w-100" method="post">
                         <div class="mb-3">
                             <h3 class="text-center fw-bold text-primary">Authenticate</h3>
                         </div>
+                        <div class="errormsg"></div>
                         <div class="mb-3">
                             <label for="userName" class="form-label">User Name</label>
-                            <input type="text" class="form-control" id="userName" name="userName">
-                            <span id="usernameavailblty"></span>
+                            <input type="text" class="form-control" id="userName" name="userName" value="<?php if(isset($username)){echo $username;}else{echo "";}?>">
+                            <span id="usernameavailblty" class="text-danger"><?php echo $message;?></span>
                         </div>
                         <div class="mb-3">
                             <label for="Password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="Password" name="Password">
+                            <span id="checkpassword" class="text-danger"></span>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 mb-5" id="Login" name="Login">Login</button>
+                        <input type="submit" class="btn btn-primary w-100 mb-5" id="Login" name="Login" value="Login">
                         <p class="text-center">No account? <a href="signUp.php" class="text-decoration-none text-primary fw-bold">Sign Up</a> here</p>
                     </form>
                 </div>
@@ -71,19 +75,22 @@ if(isset($_POST['Login'])){
             </div>
         </div>
     <!---------------------------------------------------------------------------->    
-    <script src="js/my-bootstrap.js"></script>
+    <script src="../Assets/JS/my-bootstrap.js"></script>
     <script>
-        function checkusername(va) {
-            $.ajax({
-                type: "POST",
-                url: "check.php",
-                data:'userName='+va,
-                success: function(data){
-                    $("#usernameavailblty").html(data);
-                    }
-            });
-        }
+        const username = document.querySelector("#userName");
+        const password = document.querySelector("#Password");
+        const checkmsg = document.querySelector("#usernameavailblty");
+        const checkpass = document.querySelector("#checkpassword");
+        const btnLogin = document.querySelector("#Login");
         
+        btnLogin.addEventListener("click", (e)=>{
+            if(username.value=="" || password.value==""){
+                e.preventDefault();
+                checkmsg.innerText = (username.value === "") ? "UserName is Required" : "";
+                checkpass.innerText =(Password.value === "") ? "Password is Required" : "";
+            }
+        });
+
     </script>
 </body>
 </html>

@@ -41,7 +41,22 @@ if(isset($_POST['save'])){
     }
 }
 
-$row = $contact->displayConnect();
+$limit=4;
+if (isset($_GET["page"])) {
+	$page  = $_GET["page"]; 
+	} 
+	else{ 
+	$page=1;
+};  
+$start_from = ($page-1) * $limit;
+$row = $contact->displayConnect($start_from,$limit);
+
+$records=$contact->countID();
+$total_records = $records[0];
+$total_pages=ceil($total_records/$limit);
+
+
+
 
 ?>
 
@@ -79,19 +94,23 @@ $row = $contact->displayConnect();
                         <div class="mb-3 w-50 me-3">
                             <label for="Name" class="form-label">Name<span class="text-danger">*</span></label>
                             <input type="text" class=" form-control shadow-none" id="Name" name="Name" value ="">
+                            <div class="msg" id="errorNp" for="name"></div>
                         </div>
                         <div class="mb-3 w-50">
                             <label for="Phone" class="form-label">Phone</label>
                             <input type="text" class="form-control shadow-none" id="Phone" name="Phone" value ="">
+                            <div class="msg" id="error" for="Email"></div>
                         </div>
                         </div>
                         <div class="mb-3">
                             <label for="Email" class="form-label">Email<span class="text-danger">*</span></label>
                             <input type="text" class="form-control shadow-none" id="Email" name="Email" value ="">
+                            <div class="msg" id="error" for="Email"></div>
                         </div>
                         <div class="mb-3">
                             <label for="Address" class="form-label">Address</label>
                             <input type="text" class="form-control shadow-none" id="Address" name="Address" value ="">
+                            <div class="msg" id="error" for="Email"></div>
                         </div>
                         <input type="hidden" class="form-control shadow-none" id="id" name="id" value ="">
                         <div class="d-flex">
@@ -114,7 +133,7 @@ $row = $contact->displayConnect();
                 <div class="collapse  mt-sm-3 mt-lg-0 mb-0 navbar-collapse text-white" id="navbarText">
                     <ul class="navbar-nav ms-auto text-white  mb-0  align-items-center flex-column flex-md-row justify-content-start ">
                         <li class="nav-item d-flex justify-content-center me-3">
-                            <a class="nav-link text-white mx-2"  href="profil.php">Ahmed Salim</a>
+                            <a class="nav-link text-white mx-2"  href="profil.php"><?php echo $_SESSION['userName']?></a>
                         </li>
                         <li class="nav-item d-flex justify-content-center me-3">
                             <a class="nav-link text-white mx-2"  href="contactList.php">Contacts</a>
@@ -151,7 +170,7 @@ $row = $contact->displayConnect();
             <tbody>
                 <?php foreach ($row as $row){
                 ?>
-                <tr class="idd" data-target ="<?=$row['id'];?>">
+                <tr class="idd" data-id ="<?=$row['id'];?>">
                 <td ><span class="nme border border-2 border-primary text-danger p-1" style="width:20px; height:20px; border-radius:100%;" ><?php echo strtoupper(substr($row['Name'],0,2))?></span></td>
                 <td class="tdN" data-target="<?=$row['Name'];?>"><?php echo $row['Name']?></td>
                 <td class="tdE"  data-target="<?=$row['Email'];?>"><?php echo $row['Email']?></td>
@@ -176,6 +195,13 @@ $row = $contact->displayConnect();
                 <span>add new contact</span>
             </button>
         </div>
+        <?php
+            $pagLink = "<ul class='pagination d-flex justify-content-center'>";  
+            for ($i=1; $i<=$total_pages; $i++) {
+                $pagLink .= "<li class='page-item'><a class='page-link text-danger' href='contactList.php?page=".$i."'>".$i."</a></li>";	
+            }
+        echo $pagLink . "</ul>";  
+        ?>
     </div>
     <!--------------------------------------------------------------------------------------------->
     <script src="js/my-bootstrap.js"></script>
@@ -186,8 +212,8 @@ $row = $contact->displayConnect();
             modal.setAttribute("style","display:none;");
             form.setAttribute("style","display:flex;");
             confirmation.setAttribute("style","display:none;");
-            window.location.href='../class/delete.php?id=<?php echo $row['id']?>';
-        })
+            window.location.href='./components/delete.php?id=<?php echo $row['id']?>';
+        });
         
     </script>
 </body>

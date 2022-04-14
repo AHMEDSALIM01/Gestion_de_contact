@@ -1,5 +1,5 @@
 <?php
-    include_once('../class/Crud.php');
+    include_once('../../class/Crud.php');
     $UserName = new Crud();
     $uname = $_POST['userName'];
     $sql = $UserName->checkUser($uname);
