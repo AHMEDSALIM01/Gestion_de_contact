@@ -59,12 +59,12 @@ if(isset($_POST['Login'])){
                         <div class="errormsg"></div>
                         <div class="mb-3">
                             <label for="userName" class="form-label">User Name</label>
-                            <input type="text" class="form-control" id="userName" name="userName" value="<?php if(isset($username)){echo $username;}else{echo "";}?>">
+                            <input type="text" class="form-control shadow-none" id="userName" name="userName" value="<?php if(isset($username)){echo $username;}else{echo "";}?>">
                             <span id="usernameavailblty" class="text-danger"><?php echo $message;?></span>
                         </div>
                         <div class="mb-3">
                             <label for="Password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="Password" name="Password">
+                            <input type="password" class="form-control shadow-none" id="Password" name="Password">
                             <span id="checkpassword" class="text-danger"></span>
                         </div>
                         <input type="submit" class="btn btn-primary w-100 mb-5" id="Login" name="Login" value="Login">
@@ -82,6 +82,7 @@ if(isset($_POST['Login'])){
         const checkmsg = document.querySelector("#usernameavailblty");
         const checkpass = document.querySelector("#checkpassword");
         const btnLogin = document.querySelector("#Login");
+        const RegexUsername = /^[a-zA-Z0-9 ]{3,15}$/;
         
         btnLogin.addEventListener("click", (e)=>{
             if(username.value=="" || password.value==""){
@@ -89,6 +90,20 @@ if(isset($_POST['Login'])){
                 checkmsg.innerText = (username.value === "") ? "UserName is Required" : "";
                 checkpass.innerText =(Password.value === "") ? "Password is Required" : "";
             }
+        });
+
+        username.addEventListener("input", ()=>{
+            if(!RegexUsername.test(username.value)){
+                username.setAttribute("style","border:2px solid red;")
+                checkmsg.innerText = "UserName should contain only numbers and letters !";
+                btnLogin.setAttribute("disabled","true");
+                
+            }else{
+                username.removeAttribute("style","border:2px solid red;")
+                checkmsg.innerText = "";
+                btnLogin.removeAttribute("disabled","true");
+            }
+
         });
 
     </script>

@@ -4,7 +4,8 @@
 
 .table{
     border-collapse:separate;
-    border-spacing:0 10px;
+    border-spacing:0 8px;
+    font-size: 13px;
 }
 
 tbody tr td:first-child{
@@ -16,3 +17,10 @@ tbody tr td:last-child{
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
 } 
+
+.favFill{
+    display:inline;
+    color: #fcd53f;
+}
+
+

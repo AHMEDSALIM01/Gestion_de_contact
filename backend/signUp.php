@@ -84,8 +84,8 @@
                 url: "./components/check.php",
                 data:'userName='+va,
                 success: function(data){
-                    // $("#usernameavailblty").html(data);
-                    console.log(data);
+                    $("#usernameavailblty").html(data);
+                    
                     }
             });
 

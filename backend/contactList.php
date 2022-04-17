@@ -5,6 +5,8 @@ if (!isset($_SESSION['user']) ||(trim ($_SESSION['user']) == '')){
 	header('location:login.php');
 }
 
+
+
 include_once('../class/Crud.php');
 $contact = new Crud();
 
@@ -41,7 +43,7 @@ if(isset($_POST['save'])){
     }
 }
 
-$limit=4;
+$limit=5;
 if (isset($_GET["page"])) {
 	$page  = $_GET["page"]; 
 	} 
@@ -49,13 +51,11 @@ if (isset($_GET["page"])) {
 	$page=1;
 };  
 $start_from = ($page-1) * $limit;
-$row = $contact->displayConnect($start_from,$limit);
+$row = $contact->displayConnectLimit($start_from,$limit);
 
 $records=$contact->countID();
 $total_records = $records[0];
 $total_pages=ceil($total_records/$limit);
-
-
 
 
 ?>
@@ -69,9 +69,9 @@ $total_pages=ceil($total_records/$limit);
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../Assets/CSS/my-bootstrap.css">
     <link rel="stylesheet" href="../Assets/CSS/style.css">
-    <link rel="shortcut icon" type="image/png" href="">
+    <link rel="shortcut icon" type="image/png" href="../Assets/Images/Favicon.png">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <title>Profile</title>
+    <title>Contact List</title>
 </head>
 <body class="vh-100" style="background-image:url('../Assets/Images/tile_background.png')">
     <!---------------------------------- Modal ---------------------------------->
@@ -170,14 +170,15 @@ $total_pages=ceil($total_records/$limit);
             <tbody>
                 <?php foreach ($row as $row){
                 ?>
-                <tr class="idd" data-id ="<?=$row['id'];?>">
+                <tr class="idd" data-id="<?=$row['id'];?>">
                 <td ><span class="nme border border-2 border-primary text-danger p-1" style="width:20px; height:20px; border-radius:100%;" ><?php echo strtoupper(substr($row['Name'],0,2))?></span></td>
                 <td class="tdN" data-target="<?=$row['Name'];?>"><?php echo $row['Name']?></td>
                 <td class="tdE"  data-target="<?=$row['Email'];?>"><?php echo $row['Email']?></td>
                 <td class="tdP"  data-target="<?=$row['Phone'];?>"><?php echo $row['Phone']?></td>
                 <td class="tdA"  data-target="<?=$row['Address'];?>"><?php echo $row['Address']?></td>
-                <td><i class="edit text-danger fs-5 bi bi-pen-fill " style="cursor:pointer;"></i></td>
-                <td><a href="#?id=<?php echo $row['id']?>"><i class="delete text-danger fs-5 bi bi-trash-fill" style="cursor:pointer;"></i></a</td>
+                <td><i class="edit text-danger fs-6 bi bi-pen-fill " style="cursor:pointer;"></i></td>
+                <td><a href="#?id=<?php echo $row['id']?>"><i class="delete text-danger fs-6 bi bi-trash-fill" style="cursor:pointer;"></i></a</td>
+                <td><a class="btn text-decoration-none btn-outline-danger border-0" href="./components/addFovaris.php?id=<?php echo $row['id'];?>">Add to Favoris</a</td>
                 </tr>
                 <?php }}?>
             </tbody>
@@ -190,30 +191,34 @@ $total_pages=ceil($total_records/$limit);
             }
         ?>
         <div class="d-flex justify-content-center">
-            <button class="add btn btn-primary text text-uppercase text-white my-3 px-3 py-2" id = "ADDNEW">
+            <button class="add btn btn-primary text text-uppercase text-white mt-1 mb-3 px-3 py-2" id = "ADDNEW">
                 <i class="fs-6 bi bi-plus-circle-fill"></i>
                 <span>add new contact</span>
             </button>
         </div>
-        <?php
-            $pagLink = "<ul class='pagination d-flex justify-content-center'>";  
+        
+    </div>
+    <?php
+            $pagLink = "<ul class='pagination d-flex justify-content-center mt-4'>";  
             for ($i=1; $i<=$total_pages; $i++) {
                 $pagLink .= "<li class='page-item'><a class='page-link text-danger' href='contactList.php?page=".$i."'>".$i."</a></li>";	
             }
-        echo $pagLink . "</ul>";  
-        ?>
-    </div>
+            echo $pagLink . "</ul>";  
+    ?>
     <!--------------------------------------------------------------------------------------------->
-    <script src="js/my-bootstrap.js"></script>
+    <script src="../Assets/JS/my-bootstrap.js"></script>
     <script src="../Assets/JS/script.js"></script>
     <script>
-        
         Yes.addEventListener("click",()=>{
             modal.setAttribute("style","display:none;");
             form.setAttribute("style","display:flex;");
             confirmation.setAttribute("style","display:none;");
             window.location.href='./components/delete.php?id=<?php echo $row['id']?>';
         });
+       
+
+       
+        
         
     </script>
 </body>

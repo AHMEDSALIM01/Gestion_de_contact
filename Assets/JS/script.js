@@ -21,6 +21,7 @@ const iPhone = document.querySelector("#Phone");
 const iAddress = document.querySelector("#Address");
 const IDd = document.querySelector("#id");
 
+
 add.addEventListener("click", ()=>{
     modal.setAttribute("style","display:flex; position:absolute; z-index:1040; background-color:rgba(0,0,0,0.5); width:100%; height:100%;");
     save.value="Add";
@@ -66,6 +67,5 @@ No.addEventListener("click",()=>{
     form.setAttribute("style","display:flex;");
     confirmation.setAttribute("style","display:none;");
 })
-
 
 

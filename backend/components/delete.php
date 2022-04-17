@@ -5,5 +5,5 @@ $contact= new Crud();
 if($_GET['id']){
     $ID=$_GET['id'];
     $del = $contact->deleteContact($_SESSION['user'],$ID);
-    header("location:../contactListe.php");
+    header("location:../contactList.php");
 }
