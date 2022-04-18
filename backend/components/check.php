@@ -1,6 +1,10 @@
 <?php
-    include_once('../../class/Crud.php');
-    $UserName = new Crud();
+    session_start();
+    if (isset($_SESSION['user'])){
+        header('location:profil.php');
+    }
+    include_once('../../class/Users.php');
+    $UserName = new Users();
     $uname = $_POST['userName'];
     $sql = $UserName->checkUser($uname);
     $num = mysqli_num_rows($sql);

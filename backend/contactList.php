@@ -7,8 +7,8 @@ if (!isset($_SESSION['user']) ||(trim ($_SESSION['user']) == '')){
 
 
 
-include_once('../class/Crud.php');
-$contact = new Crud();
+include_once('../class/Contact.php');
+$contact = new Contact();
 
 if(isset($_POST['Update']))
     {
@@ -18,6 +18,7 @@ if(isset($_POST['Update']))
         $Phone = $_POST['Phone'];
         $Email = $_POST['Email'];
         $Address = $_POST['Address'];
+        echo $_POST['Name'];
         $sql=$contact->update($id,$uid,$Name, $Phone,$Email,$Address);
         if($sql)
         {
@@ -177,8 +178,9 @@ $total_pages=ceil($total_records/$limit);
                 <td class="tdP"  data-target="<?=$row['Phone'];?>"><?php echo $row['Phone']?></td>
                 <td class="tdA"  data-target="<?=$row['Address'];?>"><?php echo $row['Address']?></td>
                 <td><i class="edit text-danger fs-6 bi bi-pen-fill " style="cursor:pointer;"></i></td>
-                <td><a href="#?id=<?php echo $row['id']?>"><i class="delete text-danger fs-6 bi bi-trash-fill" style="cursor:pointer;"></i></a</td>
-                <td><a class="btn text-decoration-none btn-outline-danger border-0" href="./components/addFovaris.php?id=<?php echo $row['id'];?>">Add to Favoris</a</td>
+                <td><i class="delete text-danger fs-6 bi bi-trash-fill" style="cursor:pointer;"></i></td>
+                <td class="Favoris"><a class="addfav text-decoration-none" href="./components/addFovaris.php?id=<?php echo $row['id'];?>"><i class="bi text-danger fs-5 bi-star" style ="<?php if($row['Favoris']==true){echo"display:none;" ;} ?>"></i><i class="bi fs-5 bi-star-fill" style="<?php if($row['Favoris']==true){echo "display:inline;";}else{echo"display:none;";} ?>;color:#fcd53f;"></i></a></td>
+                <input type="hidden" id="inp" value="<?=$row['id'];?>">
                 </tr>
                 <?php }}?>
             </tbody>
@@ -209,13 +211,51 @@ $total_pages=ceil($total_records/$limit);
     <script src="../Assets/JS/my-bootstrap.js"></script>
     <script src="../Assets/JS/script.js"></script>
     <script>
-        Yes.addEventListener("click",()=>{
-            modal.setAttribute("style","display:none;");
-            form.setAttribute("style","display:flex;");
-            confirmation.setAttribute("style","display:none;");
-            window.location.href='./components/delete.php?id=<?php echo $row['id']?>';
+        const Favfill = document.querySelectorAll('.Favorisfill');
+        const addFav = document.querySelectorAll('.addfav');
+        const removeFav = document.querySelectorAll('.removefav');
+        const tdd = document.querySelectorAll('.idd');
+        
+    $(document).ready(function() {
+        $(document).on("click", ".delete", function() { 
+            $.ajax({
+                url: "./components/delete.php",
+                type: "POST",
+                cache: false,
+                data:{ 
+                    id: $("#inp").val(),
+                },
+                success: function(data){
+                    $("body").html(data)
+                }
+            });
         });
-       
+    });
+
+    $(document).ready(function() {
+        $(document).on("click", ".delete", function() { 
+            $.ajax({
+                url: "./components/delete.php",
+                type: "POST",
+                cache: false,
+                data:{ 
+                    id: $("#inp").val(),
+                },
+                success: function(data){
+                    $("body").html(data)
+                }
+            });
+        });
+    });
+
+
+        // Yes.addEventListener("click",()=>{
+        //     modal.setAttribute("style","display:none;");
+        //     form.setAttribute("style","display:flex;");
+        //     confirmation.setAttribute("style","display:none;");
+        //     window.location.href='./components/delete.php?id=<?php echo $row['id']?>';
+        // });
+    
 
        
         

@@ -50,16 +50,6 @@ for(let i=0 ; i<edit.length ; i++){
         IDd.value=tdI;
     });
 }
-for(let i=0 ; i<edit.length ; i++){
-    delet[i].addEventListener("click",()=>{
-        modal.setAttribute("style","display:flex; position:absolute; z-index:1040; background-color:rgba(0,0,0,0.5); width:100%; height:100%;");
-        confirmation.setAttribute("style","display:flex");
-        form.setAttribute("style","display:none;");
-        const tdI = TDI[i].getAttribute('data-target');
-        IDd.value=tdI;
-    });
-}
-
 
 No.addEventListener("click",()=>{
    

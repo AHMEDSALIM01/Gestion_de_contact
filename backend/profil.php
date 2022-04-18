@@ -5,9 +5,11 @@ if (!isset($_SESSION['user']) ||(trim ($_SESSION['user']) == '')){
 	header('location:login.php');
 }
  
-include_once('../class/Crud.php');
- 
-$user = new Crud();
+include_once('../class/Users.php');
+include_once('../class/Contact.php');
+$sessionid=$_SESSION['user'];
+$user = new Users();
+$Contact = new Contact();
 
 $msg1="";
 $msg2="";
@@ -56,8 +58,8 @@ if(count($_POST)>0){
     
 }
 
-$records=$user->countID();
-$Tfavoris=$user->countIDF();
+$records=$Contact->countID();
+$Tfavoris=$Contact->countIDF();
 // $rows = $user->displayFavoris();
 
 $limit=4;
@@ -69,11 +71,10 @@ if (isset($_GET["page"])) {
 };  
 
 $start_from = ($page-1) * $limit;
-$rows = $user->displayFavorislimit($start_from,$limit);
+$rows = $Contact->displayFavorislimit($start_from,$limit);
 
 $total_favoris = $Tfavoris[0];
 $total_pages=ceil($total_favoris/$limit);
-    
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -88,6 +89,17 @@ $total_pages=ceil($total_favoris/$limit);
     <title>Profile</title>
 </head>
 <body class="vh-100 position-relative" style="font-family: 'Poppins', sans-serif;">
+    <div class="mdldel justify-content-center align-items-center" style="display:none; position:absolute; z-index:1040; background-color:rgba(0,0,0,0.5); width:100%; height:100%;">
+        <div class ="confirmations row w-100 justify-content-center align-items-center" style="position:absolute; z-index:1060; display:none;">
+            <div class ="d-flex flex-column align-items-center justify-content-center p-4 bg-white col-12 col-sm-8 col-md-6 col-lg-3 rounded-3" style="height:200px;">
+                <h5 class="mb-5">Do you really want to delete your account ?</h5>
+                <div>
+                    <button class="Yesdel fs-5 me-3 btn btn-outline-danger"><span>Yes</span></button>
+                    <button class="Nodel fs-5 btn btn-outline-primary"><span>No</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!---------------------------------- Navbar ---------------------------------->
     <nav class="navbar navbar-expand-lg navbar-light mb-0 border-bottom border-3 border-danger bg-danger px-5 fs-5" >
             <div class="container-sm container-fluid">
@@ -177,9 +189,10 @@ $total_pages=ceil($total_favoris/$limit);
         <div class="row w-100" style="">
             <div class="col-12 col-md-4 p-5 d-flex justify-content-start align-items-center flex-column " style="">
                 <button id="show" class="mb-4" style = "background:transparent; border:none;"><img src="../Assets/Images/<?php if(!empty($img)){echo $img;}else{echo'user.png';}?>" alt="" style="width:260px;height:260px; border-radius:100%"></button>
-                <h6 class="mb-4 fw-bolder"><?php echo $row['userName']?></h6>
-                <button type="submit" name="editProfile" id="editProfile" class="btn btn-danger">Edit your profile</button>
-                <div class="d-flex align-items-center mt-3">
+                <h6 class="mb-3 fw-bolder"><?php echo $row['userName']?></h6>
+                <button type="submit" name="editProfile" id="editProfile" class="btn btn-danger mb-2">Edit your profile</button>
+                <btn name="editProfile" id="deleteProfile" class="btn btn-outline-danger border-0" href="#./components/deletUser.php?id=<?php echo $_SESSION['user']; ?>">Delete your profile</btn>
+                <div class="d-flex align-items-center mt-2">
                     <div class="d-flex align-items-center me-2"><i class="bi bi-star-fill fs-5 me-2" style="color:#fcd53f;"></i><span class="align-self-end" style="font-size:12px;"><?php echo $Tfavoris[0];?> Favoris</span></div>
                     <div class="d-flex align-items-center"><i class="bi fs-5 bi-person-lines-fill text-danger me-2"></i><span class="align-self-end" style="font-size:12px;"><?php echo $records[0];?> Contacts</span></div>
                 </div>
@@ -193,7 +206,7 @@ $total_pages=ceil($total_favoris/$limit);
                                     <span  class="btn editpic border-0 py-1" style="position:absolute; top:75px; left:310px; background-color:#dcdcdb;">Edit</span>
                                     <div class="editPIC flex-column mt-3 p-2 rounded-2" style="display:none;">
                                         <span  style ="color:#dcdcdb; position:absolute; top:-25px; left:10px;"><i class="bi fs-3 bi-caret-up-fill"></i></span>
-                                        <a href="./components/deleteimg.php" class="btn deletpic btn-outline-primary border-0 px-1" style="font-size:12px;">Delete Picture</a>
+                                        <span  class="btn deletpic btn-outline-primary border-0 px-1" style="font-size:12px;">Delete Picture</span>
                                         <label for="file" class="form-label fw-bolder" ><span class="btn btn-outline-primary border-0 px-1" style="font-size:12px;">Upload New Picture</span></label>
                                     </div>
                                     <h3 class="text-center fw-bold text-primary mt-2">Edit Profile</h3>
@@ -201,6 +214,7 @@ $total_pages=ceil($total_favoris/$limit);
                                 <div class="mb-2 position-relative ">
                                     <div class ="d-flex flex-column align-items-center">
                                         <input type="file" class="form-control d-none fw-bolder" id="file"  name="avatar" >
+                                        <input type="hidden" id="session" value="<?=$_SESSION['user'];?>">
                                         <!-- <div class="d-flex">
                                             <span id="title" class="ms-2"></span>
                                             <i class="bi bi-x-circle-fill fs-6 ms-2 exclamation" id="invalidPic"></i>
@@ -244,7 +258,7 @@ $total_pages=ceil($total_favoris/$limit);
     <!--------------------------------------------------------------------------------->
     <!---------------------------------- Profile Info ------------------------------------>
             <div class="col-12 col-md-8 px-5">
-                <div class="card pfInfo bg-light row mb-3  mt-md-5">
+                <div class="card pfInfo bg-light row mb-3  mt-md-4">
                         <div class="card-title">
                             <h3 class="text-danger fw-bold p-3">Profile Info</h3>
                         </div>
@@ -265,7 +279,7 @@ $total_pages=ceil($total_favoris/$limit);
                         </div>
                 </div>
     <!---------------------------------- Favoris Contact ------------------------------------>
-                <div class="card row bg-light favcontact mb-3">
+                <div class="card row bg-light favcontact mb-0">
                     <div class="container table-responsive bg-light rounded-3 position-relative" style="font-size:11px">
                             <table class="table table-borderless table-light table-striped table-hover caption-top align-middle">
                                 <caption class="p-3">
@@ -294,7 +308,6 @@ $total_pages=ceil($total_favoris/$limit);
                                     <td class="tdE"  data-target="<?=$Row['Email'];?>"><?php echo $Row['Email']?></td>
                                     <td class="tdP"  data-target="<?=$Row['Phone'];?>"><?php echo $Row['Phone']?></td>
                                     <td class="tdA"  data-target="<?=$Row['Address'];?>"><?php echo $Row['Address']?></td>
-                                    <td><a href="./components/deleteFavoris.php?id=<?php echo $Row['id']?>"><i class="delete text-danger fs-6 bi bi-trash-fill" style="cursor:pointer;"></i></a</td>
                                     </tr>
                                     <?php }}?>
                                 </tbody>
@@ -336,11 +349,20 @@ $total_pages=ceil($total_favoris/$limit);
         const profileInfo = document.querySelector('.pfInfo');
         const favContact = document.querySelector('.favcontact');
         const file = document.querySelector('#file');
+        const Delep = document.querySelector('#deleteProfile');
+        const modalDel = document.querySelector(".mdldel");
+        const delConf = document.querySelector(".confirmations");
+        const Yesdel = document.querySelector(".Yesdel");
+        const Nodel = document.querySelector(".Nodel");
+        const Yes = document.querySelector(".Yes");
+        const No = document.querySelector(".No");
         
         <?php echo "const image = '$img'" ?>
 
             show.addEventListener("click",()=>{
                 editModal.setAttribute("style","display:flex; justify-content:center; ")
+                profileInfo.setAttribute("style","display:none;");
+                favContact.setAttribute("style","display:none;");
             });
 
             cancel.addEventListener("click",()=>{
@@ -381,6 +403,38 @@ $total_pages=ceil($total_favoris/$limit);
                 img.src = uploaded_image;
             });
             reader.readAsDataURL(this.files[0]);
+            });
+
+            Delep.addEventListener("click",()=>{
+                modalDel.setAttribute("style","display:flex; position:absolute; z-index:1040; background-color:rgba(0,0,0,0.5); width:100%; height:100%;");
+                delConf.setAttribute("style","display:flex");
+            });
+
+            Yesdel.addEventListener("click",()=>{
+                modalDel.setAttribute("style","display:none;");
+                delConf.setAttribute("style","display:none;");
+                window.location.href='./components/deletUser.php?id=<?php echo $_SESSION['user']?>';
+            });
+
+            Nodel.addEventListener("click",()=>{
+                modalDel.setAttribute("style","display:none;");
+                delConf.setAttribute("style","display:none;");
+            });
+
+            $(document).ready(function() {
+                $(document).on("click", ".deletpic", function() { 
+                    $.ajax({
+                        url: "./components/deleteimg.php",
+                        type: "POST",
+                        cache: false,
+                        data:{ 
+                            id: $("session").val(),
+                        },
+                        success: function(data){
+                            $("body").html(data)
+                        }
+                    });
+                });
             });
 
     </script>

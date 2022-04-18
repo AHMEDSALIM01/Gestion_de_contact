@@ -6,8 +6,8 @@ if (isset($_SESSION['user'])){
     header('location:profil.php');
 }
 
-include_once('../class/Crud.php');
-$user = new Crud();
+include_once('../class/Users.php');
+$user = new Users();
 if(isset($_POST['Login'])){
 	$username = $user->escape_string($_POST['userName']);
 	$password = $user->escape_string(md5($_POST['Password']));
@@ -36,7 +36,7 @@ if(isset($_POST['Login'])){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../Assets/CSS/my-bootstrap.css">
-    <link rel="shortcut icon" type="image/png" href="">
+    <link rel="shortcut icon" type="image/png" href="../Assets/Images/Favicon.png">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <title>Login</title>
 </head>

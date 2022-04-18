@@ -5,8 +5,8 @@
         header('location:../login.php');
     }
 
-    include_once('../../class/Crud.php');
-    $favoris = new Crud();
+    include_once('../../class/Contact.php');
+    $favoris = new Contact();
     if(isset($_GET['id'])){
         $Id=$_GET['id'];
     }
@@ -22,26 +22,18 @@
     if(is_array($rows)){
             $ID=$rows[0];
             if($ID===$id){
-                $del = $favoris->deleteFavoris($_SESSION['user'],$ID);
-                echo "<script>alert('Contact removed from favoris list');</script>";
-                echo "<script>window.location.href='../contactList.php'</script>";
+                $fav=$favoris->updateFavoris(false,$id,$userID);
+                header("location:../contactList.php");
             }else{
-                $sqlF = $favoris->addFavoris($userID,$id,$Name,$Phone,$Email,$Address);
-                echo "<script>alert('Contact added to favoris list');</script>";
-                if(!$sqlF){
-                    echo "<script>alert('Something went wrong. Please try again');</script>";
-                }
-                echo "<script>window.location.href='../contactList.php'</script>";
+                $fav=$favoris->updateFavoris(true,$id,$userID);
+                header("location:../contactList.php");
             }
-            
-    }else{
-        $sqlF = $favoris->addFavoris($userID,$id,$Name,$Phone,$Email,$Address);
-        echo "<script>alert('Contact added to favoris list');</script>";
-        if(!$sqlF){
-            echo "<script>alert('Something went wrong. Please try again');</script>";
         }
-        echo "<script>window.location.href='../contactList.php'</script>";
+    else{
+        $fav=$favoris->updateFavoris(true,$id,$userID);
+        header("location:../contactList.php");
     }
+
     
     
 ?>
