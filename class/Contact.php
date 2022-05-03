@@ -107,16 +107,6 @@
             }      
         }
     
-        public function deleteFavoris($uId,$ID){
-            $ret = "DELETE FROM favorisliste WHERE id_contact='$ID' AND id_user='$uId'";
-            $query = $this->dbh->query($ret);
-            $data = array();
-            if($query){
-                return true;
-            }else{
-                return false;
-            }
-        }
     
         public function countIDF(){
             $sql = "SELECT count(id) FROM contacliste WHERE Favoris = true AND id_user = '".$_SESSION['user']."'";
@@ -125,23 +115,11 @@
             return $row;
         }
     
-        // public function Sessionfav($favcontact_id){
-        //     $_SESSION['id_contact'][1]=$favcontact_id;
-        // }
-    
         public function displayRowFavoris($id){
      
             $sql = "SELECT id FROM contacliste WHERE Favoris = true  AND id_user = '".$_SESSION['user']."'";
             $query = $this->dbh->query($sql);
             $row = mysqli_fetch_row($query);
-            return $row;
-        }
-    
-        public function displayFav(){
-     
-            $sql = "SELECT * FROM favorisliste WHERE id_user = '".$_SESSION['user']."'";
-            $query = $this->dbh->query($sql);
-            $row = mysqli_fetch_assoc($query);
             return $row;
         }
 

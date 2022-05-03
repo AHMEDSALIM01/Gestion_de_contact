@@ -18,7 +18,8 @@
     $Phone = $display[0]['Phone'];
     $Email = $display[0]['Email'];
     $Address = $display[0]['Address'];
-    // print_r($rows);
+
+    print_r($rows);
     if(is_array($rows)){
             $ID=$rows[0];
             if($ID===$id){

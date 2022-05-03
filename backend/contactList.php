@@ -5,7 +5,10 @@ if (!isset($_SESSION['user']) ||(trim ($_SESSION['user']) == '')){
 	header('location:login.php');
 }
 
-
+$message="";
+$message1="";
+$message2="";
+$message3="";
 
 include_once('../class/Contact.php');
 $contact = new Contact();
@@ -18,29 +21,53 @@ if(isset($_POST['Update']))
         $Phone = $_POST['Phone'];
         $Email = $_POST['Email'];
         $Address = $_POST['Address'];
-        echo $_POST['Name'];
-        $sql=$contact->update($id,$uid,$Name, $Phone,$Email,$Address);
-        if($sql)
-        {
-            echo "<script>alert('Contact Edited successfully.');</script>";
-            echo "<script>window.location.href='contactList.php'</script>";
+        if($Name !== "" && $Phone !== "" && $Email !==""){
+            if(preg_match("/^[A-Z a-z]{3,24}$/",$Name) && preg_match("/^\+((?:9[679]|8[035789]|6[789]|5[90]|42|3[578]|2[1-689])|9[0-58]|8[1246]|6[0-6]|5[1-8]|4[013-9]|3[0-469]|2[70]|7|1)(?:\W*\d){0,13}\d$/",$Phone) && preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/",$Email)){
+                $sql=$contact->update($id,$uid,$Name, $Phone,$Email,$Address);
+                if($sql)
+                {
+                    echo "<script>alert('Contact Edited successfully.');</script>";
+                    echo "<script>window.location.href='contactList.php'</script>";
+                }else{
+                    echo "<script>alert('Something went wrong. Please try again');</script>";
+                }
+            }else{
+                $message = (!preg_match("/^[A-Z a-z]{3,24}$/",$Name)) ? "Name should be like FirstName LastName" : "";
+                $message1 = (!preg_match("/^\+((?:9[679]|8[035789]|6[789]|5[90]|42|3[578]|2[1-689])|9[0-58]|8[1246]|6[0-6]|5[1-8]|4[013-9]|3[0-469]|2[70]|7|1)(?:\W*\d){0,13}\d$/",$Phone)) ? "Phone accept only format +-() 1234567890" : "";
+                $message2 = (!preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/",$Email)) ? "Email should be on format (Example@email.com)" : "";
+            }
         }else{
-            echo "<script>alert('Something went wrong. Please try again');</script>";
+                $message = ($Name === "") ? "Name should not be blank" : "";
+                $message1 = ($Phone === "") ? "Phone should not be blank" : "";
+                $message2 = ($Email === "") ? "Email should not be blank" : "";
         }
+        
     }
 
-if(isset($_POST['save'])){
+if(isset($_POST['Add'])){
     $userID= $_SESSION['user'];
     $Name= $_POST['Name'];
     $Phone= $_POST['Phone'];
     $Email= $_POST['Email'];
     $Address= $_POST['Address'];
-    $sqdl = $contact->addContact($userID,$Name,$Phone,$Email,$Address);
-    if($sqdl){
-        echo "<script>alert('Contact Added successfully.');</script>";
-        echo "<script>window.location.href='contactList.php'</script>";
+    if($Name !== "" && $Phone !== "" && $Email !==""){
+        if(preg_match("/^[A-Z a-z]{3,24}$/",$Name) && preg_match("/^\+((?:9[679]|8[035789]|6[789]|5[90]|42|3[578]|2[1-689])|9[0-58]|8[1246]|6[0-6]|5[1-8]|4[013-9]|3[0-469]|2[70]|7|1)(?:\W*\d){0,13}\d$/",$Phone) && preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/",$Email)){
+            $sqdl = $contact->addContact($userID,$Name,$Phone,$Email,$Address);
+            if($sqdl){
+                echo "<script>alert('Contact Added successfully.');</script>";
+                echo "<script>window.location.href='contactList.php'</script>";
+            }else{
+                echo "<script>alert('Something went wrong. Please try again');</script>";
+            }
+        }else{
+            $message = (!preg_match("/^[A-Z a-z]{3,24}$/",$Name)) ? "Name should be like FirstName LastName" : "";
+            $message1 = (!preg_match("/^\+((?:9[679]|8[035789]|6[789]|5[90]|42|3[578]|2[1-689])|9[0-58]|8[1246]|6[0-6]|5[1-8]|4[013-9]|3[0-469]|2[70]|7|1)(?:\W*\d){0,13}\d$/",$Phone)) ? "Phone accept only format +-() 1234567890" : "";
+            $message2 = (!preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/",$Email)) ? "Email should be on format (Example@email.com)" : "";
+        }
     }else{
-        echo "<script>alert('Something went wrong. Please try again');</script>";
+        $message = ($Name === "") ? "Name should not be blank" : "";
+        $message1 = ($Phone === "") ? "Phone should not be blank" : "";
+        $message2 = ($Email === "") ? "Email should not be blank" : "";
     }
 }
 
@@ -95,23 +122,23 @@ $total_pages=ceil($total_records/$limit);
                         <div class="mb-3 w-50 me-3">
                             <label for="Name" class="form-label">Name<span class="text-danger">*</span></label>
                             <input type="text" class=" form-control shadow-none" id="Name" name="Name" value ="">
-                            <div class="msg" id="errorNp" for="name"></div>
+                            <small class="msg text-danger" id="errorNp" for="Name"><?php echo $message ?></small>
                         </div>
                         <div class="mb-3 w-50">
-                            <label for="Phone" class="form-label">Phone</label>
+                            <label for="Phone" class="form-label">Phone<span class="text-danger">*</span></label>
                             <input type="text" class="form-control shadow-none" id="Phone" name="Phone" value ="">
-                            <div class="msg" id="error" for="Email"></div>
+                            <small class="msg text-danger" id="errorPhone" for="Phone"><?php echo $message1 ?></small>
                         </div>
                         </div>
                         <div class="mb-3">
                             <label for="Email" class="form-label">Email<span class="text-danger">*</span></label>
                             <input type="text" class="form-control shadow-none" id="Email" name="Email" value ="">
-                            <div class="msg" id="error" for="Email"></div>
+                            <small class="msg text-danger" id="errorEmail" for="Email"><?php echo $message2 ?></small>
                         </div>
                         <div class="mb-3">
                             <label for="Address" class="form-label">Address</label>
                             <input type="text" class="form-control shadow-none" id="Address" name="Address" value ="">
-                            <div class="msg" id="error" for="Email"></div>
+                            <small class="msg text-danger" id="errorAddress" for="Address"><?php echo $message3 ?></small>
                         </div>
                         <input type="hidden" class="form-control shadow-none" id="id" name="id" value ="">
                         <div class="d-flex">
@@ -231,35 +258,7 @@ $total_pages=ceil($total_records/$limit);
             });
         });
     });
-
-    $(document).ready(function() {
-        $(document).on("click", ".delete", function() { 
-            $.ajax({
-                url: "./components/delete.php",
-                type: "POST",
-                cache: false,
-                data:{ 
-                    id: $("#inp").val(),
-                },
-                success: function(data){
-                    $("body").html(data)
-                }
-            });
-        });
-    });
-
-
-        // Yes.addEventListener("click",()=>{
-        //     modal.setAttribute("style","display:none;");
-        //     form.setAttribute("style","display:flex;");
-        //     confirmation.setAttribute("style","display:none;");
-        //     window.location.href='./components/delete.php?id=<?php echo $row['id']?>';
-        // });
     
-
-       
-        
-        
     </script>
 </body>
 </html>

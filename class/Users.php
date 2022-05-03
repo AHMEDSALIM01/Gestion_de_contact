@@ -1,6 +1,7 @@
 <?php
     include_once 'Crud.php';
     class Users extends Crud {
+        
         public function checkUser($uname){
             $result = mysqli_query($this->dbh,"SELECT userName FROM users WHERE userName = '$uname'");
             return $result;

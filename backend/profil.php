@@ -21,14 +21,21 @@ if($row>0){
 }
 
 if(count($_POST)>0){
-    $image =$_FILES['avatar']['name'];
+    $ext = substr($_FILES['avatar']['name'],strpos($_FILES['avatar']['name'],"."),strlen($_FILES['avatar']['name']));
+    $image =str_replace($_FILES['avatar']['name'],$_FILES['avatar']['name'],$_SESSION['user'].$ext);
     $userName=$user-> escape_string($_POST['userName']);
     $confirmPassword = md5($_POST['confirmPassword']);
     $newPassword = md5($_POST['newPassword']);
     $Password = md5($_POST['Password']);
     if($image){
-        unlink('../Assets/Images/'.$image);
-        move_uploaded_file($_FILES['avatar']['tmp_name'],'../Assets/Images/'.$image);
+        if(file_exists('../Assets/Images/'.$image)){
+            unlink('../Assets/Images/'.$image);
+            move_uploaded_file($_FILES['avatar']['tmp_name'],'../Assets/Images/'.$image);
+            header("location:profil.php");
+        }else{
+            move_uploaded_file($_FILES['avatar']['tmp_name'],'../Assets/Images/'.$image);
+            header("location:profil.php");
+        }
     }else{
         $image=$img;
     }
@@ -124,64 +131,6 @@ $total_pages=ceil($total_favoris/$limit);
                 </div>
             </div>
     </nav>
-    <!-- ----------------------------------Edit Profile-------------------------------->
-    <!-- <div class="ProfilEdit" style="display:none; "> -->
-    <!-- <div class ="bg-white d-flex flex-column align-items-center col-12 col-md-6 rounded-3 " >
-                    <a class="navbar-brand" href="index.php"><img src="../Assets/Images/logo2.png" class="mb-3 mt-3" alt="" style="width: 120px;"></a>
-                    <form action="" class="p-4 align-self-start w-100" method="post" enctype="multipart/form-data">
-                        <div class="mb-2 d-flex flex-column align-items-center justify-content-center position-relative">
-                            <img id="avatar" src="../Assets/Images/<?php if(!empty($img)){echo $img;}else{echo'user.png';}?>" alt="" style="width:110px;height:110px; border-radius:100%">
-                            <span  class="btn editpic border-0 py-1" style="position:absolute; top:75px; left:220px; background-color:#dcdcdb;">Edit</span>
-                            <div class="editPIC flex-column mt-3 p-2 rounded-2" style="display:none;">
-                                <span  style ="color:#dcdcdb; position:absolute; top:-30px; left:10px;"><i class="bi fs-3 bi-caret-up-fill"></i></span>
-                                <a href="./components/deleteimg.php" class="btn deletpic btn-outline-primary border-0 px-1" style="font-size:12px;">Delete Picture</a>
-                                <label for="file" class="form-label fw-bolder" ><span class="btn btn-outline-primary border-0 px-1" style="font-size:12px;">Upload New Picture</span></label>
-                            </div>
-                            <h3 class="text-center fw-bold text-primary mt-2">Edit Profile</h3>
-                        </div>
-                        <div class="mb-2 position-relative ">
-                            <div class ="d-flex flex-column align-items-center">
-                                <input type="file" class="form-control d-none fw-bolder" id="file"  name="avatar" > -->
-                                <!-- <div class="d-flex">
-                                    <span id="title" class="ms-2"></span>
-                                    <i class="bi bi-x-circle-fill fs-6 ms-2 exclamation" id="invalidPic"></i>
-                                    <i class="bi bi-check-circle-fill check ms-2" id="validPic"></i>
-                                </div>
-                                <div class="msg align-self-start" id="errorPicture"></div> -->
-                            <!-- </div>
-                            
-                        </div>
-                        
-                        <div class="mb-2">
-                            <label for="userName" class="form-label">User Name</label>
-                            <input type="text" class="form-control" id="userName" name="userName" value ="<?php echo $row['userName']?>">
-                        
-                        </div>
-                        <div class="mb-2">
-                            <span id="editPassword" class="text-primary " style="cursor:pointer;">Edit Your Password</span>
-                        </div>
-                        <div class="mb-2 pass" style="display:none">
-                            <label for="Password" class="form-label">Password</label>
-                            <input type="password" class="form-control " id="Password" name="Password" value="">
-                            <span class ="text-danger"><?php echo $msg1?></span>
-                        </div>
-                        <div class="mb-2 pass" style="display:none">
-                            <label for="newPassword" class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="newPassword" name ="newPassword">
-                            <span class ="text-danger"><?php echo $msg2; if( isset($_POST['newPassword']) && empty($_POST['newPassword'])){echo $msg3;}?></span>
-                        </div>
-                        <div class="mb-2 pass" style="display:none">
-                            <label for="confirmPassword" class="form-label">Confirm Password</label>
-                            <input type="password" class="form-control" id="confirmPassword" name ="confirmPassword">
-                            <span class ="text-danger"><?php if(isset($_POST['confirmPassword']) && empty($_POST['confirmPassword'])){echo $msg3;}?></span>
-                        </div>
-                        <div class="d-flex">
-                            <button type="submit" class="btn btn-primary w-50 me-2 mb-2" id="update" name="update">Update</button>
-                            <button type="reset" class="btn btn-danger w-50 mb-2" id="cancel" name="cancel">Cancel</button>
-                        </div>
-                    </form>
-    </div> -->
-    <!-- </div> -->
     <!------------------------------------------------------------------------------- -->
     <!---------------------------------- Card ------------------------------------>
     <div class=" border-0 " style="background-color:transparent;">
@@ -198,7 +147,6 @@ $total_pages=ceil($total_favoris/$limit);
                 </div>
             </div>
             <!------------------------------------Edit Profile-------------------------------->
-            <!-- <div class="ProfilEdit" style="display:none; "> -->
             <div class ="bg-white ProfilEdit col-12 col-md-8  flex-column align-items-center" style="display:none;">
                             <form action="" class="p-4 align-self-start w-100" method="post" enctype="multipart/form-data">
                                 <div class="mb-2 d-flex flex-column align-items-center justify-content-center position-relative">
@@ -345,7 +293,6 @@ $total_pages=ceil($total_favoris/$limit);
         const cancel = document.querySelector('#cancel');
         const editpic = document.querySelector('.editpic');
         const editPIC = document.querySelector('.editPIC');
-        const deletePIC = document.querySelector('.deletpic');
         const profileInfo = document.querySelector('.pfInfo');
         const favContact = document.querySelector('.favcontact');
         const file = document.querySelector('#file');
@@ -392,10 +339,6 @@ $total_pages=ceil($total_favoris/$limit);
                 editPIC.setAttribute("style","display:flex; background-color:#dcdcdb; position:absolute; top:100px; left:300px;")
             });
 
-            // modal.addEventListener("click",()=>{
-            //     editPIC.setAttribute("style","display:none;")
-            // });
-
             file.addEventListener("change", function() {
             const reader = new FileReader();
             reader.addEventListener("load", () => {
@@ -420,22 +363,24 @@ $total_pages=ceil($total_favoris/$limit);
                 modalDel.setAttribute("style","display:none;");
                 delConf.setAttribute("style","display:none;");
             });
-
-            $(document).ready(function() {
-                $(document).on("click", ".deletpic", function() { 
-                    $.ajax({
-                        url: "./components/deleteimg.php",
-                        type: "POST",
-                        cache: false,
-                        data:{ 
-                            id: $("session").val(),
-                        },
-                        success: function(data){
-                            $("body").html(data)
+                $(document).ready(function() {
+                    $(document).on("click", ".deletpic", function() { 
+                        if(image != ""){
+                            $.ajax({
+                                url: "./components/deleteimg.php",
+                                type: "POST",
+                                cache: false,
+                                data:{ 
+                                    id: $("session").val(),
+                                },
+                                success: function(data){
+                                    $("body").html(data)
+                                }
+                            });
                         }
                     });
                 });
-            });
+            
 
     </script>
 </body>
